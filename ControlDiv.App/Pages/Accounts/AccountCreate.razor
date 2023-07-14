@@ -1,0 +1,37 @@
+﻿@page "/Account/Create"
+@using System.Text.Json;
+@using System.Text;
+@inject IRepository repository;
+
+<h3>Agregar Cuenta</h3>
+
+<EditForm Model="account" OnValidSubmit="Create">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Cuenta</label>
+        <div>
+            <InputText class="form-control" @bind-Value="account.Name" />
+            <ValidationMessage For="(()=> account.Name)" />
+        </div>
+    </div>
+    <div>
+        <label>Monto</label>
+        <div>
+            <InputNumber class="form-control" @bind-Value="account.Mont" />
+        </div>
+    </div>
+    <div class="p-3">
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </div>
+
+</EditForm>
+
+@code {
+    private Account account = new();
+    private async Task Create()
+    {
+        await repository.Post(Apis.Account, account);
+
+    }
+
+}

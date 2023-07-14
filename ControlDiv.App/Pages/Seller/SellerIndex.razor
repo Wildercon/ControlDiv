@@ -1,0 +1,47 @@
+﻿@page "/SellerIndex"
+@inject IRepository repository;
+@inject SweetAlertService sweetAlertService;
+<h3>SellerIndex</h3>
+
+<a class="btn btn-success" href="/Seller/Add">Agregar</a>
+
+<GenericList MyList="sellers">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Vendedor</th>
+                    <th>Monto</th>
+                    <th>Comisiones</th>
+                </tr>               
+            </thead>
+            <tbody>
+                @foreach(var item in sellers)
+                {
+                    <tr>
+                        <th>@item.Name</th>
+                        <th>@item.Mont</th>
+                        <th>@item.Commission</th>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+
+@code {
+    private List<Seller> sellers;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responsehttp = await repository.Get<List<Seller>>(Apis.Seller);
+        if (responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        sellers =  responsehttp.Response;
+    }
+}
