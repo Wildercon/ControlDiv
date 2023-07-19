@@ -50,6 +50,9 @@ namespace ControlDiv.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("Comission")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -59,43 +62,18 @@ namespace ControlDiv.API.Migrations
                     b.Property<decimal>("Mont")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("Sales");
-                });
-
-            modelBuilder.Entity("ControlDiv.Shared.Entities.Seller", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Commission")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Mont")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Sellers");
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("ControlDiv.Shared.Entities.User", b =>
@@ -105,6 +83,9 @@ namespace ControlDiv.API.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Comission")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -122,6 +103,9 @@ namespace ControlDiv.API.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Mont")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -182,17 +166,18 @@ namespace ControlDiv.API.Migrations
                     b.Property<int?>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
+                    b.Property<string>("Code")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Mont")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Observation")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OperationType")
                         .HasColumnType("int");
@@ -206,6 +191,10 @@ namespace ControlDiv.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.ToTable("Vouchers");
                 });
@@ -345,13 +334,13 @@ namespace ControlDiv.API.Migrations
 
             modelBuilder.Entity("ControlDiv.Shared.Entities.Sale", b =>
                 {
-                    b.HasOne("ControlDiv.Shared.Entities.Seller", "Seller")
-                        .WithMany("Sales")
-                        .HasForeignKey("SellerId")
+                    b.HasOne("ControlDiv.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Seller");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ControlDiv.Shared.Entities.Voucher", b =>
@@ -417,11 +406,6 @@ namespace ControlDiv.API.Migrations
             modelBuilder.Entity("ControlDiv.Shared.Entities.Account", b =>
                 {
                     b.Navigation("Vouchers");
-                });
-
-            modelBuilder.Entity("ControlDiv.Shared.Entities.Seller", b =>
-                {
-                    b.Navigation("Sales");
                 });
 #pragma warning restore 612, 618
         }

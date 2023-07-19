@@ -56,7 +56,7 @@
         
 
         userDTO.UserName = userDTO.Email;
-        userDTO.UserType = UserType.Seller;
+        userDTO.UserType = UserType.Seller; 
         var responseHttp = await repository.Post<UserDTO>($"{Apis.User}/CreateUser", userDTO);
         if (responseHttp.Error)
         {

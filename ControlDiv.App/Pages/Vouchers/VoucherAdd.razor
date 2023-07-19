@@ -5,15 +5,16 @@
 <h3>Agregar Voucher</h3>
 
 <EditForm Model="voucher" OnValidSubmit="Add">
-    
+    <DataAnnotationsValidator/>
     <div>
         <label>Codigo</label>
-        <InputNumber class="form-control" @bind-Value="voucher.Code" />
-
+        <InputText class="form-control" @bind-Value="voucher.Code" />
+        <ValidationMessage For="(()=> voucher.Code)"/>
     </div>
     <div>
         <label>Monto</label>
-        <InputNumber   class="form-control " @bind-Value="voucher.Mont"/>
+        <InputNumber  class="form-control " @bind-Value="voucher.Mont"/>
+        <ValidationMessage For="(()=> voucher.Mont)" />
     </div>
     <div>
         <label>Banco</label>
@@ -55,9 +56,6 @@
     private int accountId;
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
-
-
-
 
     private async Task Add()
     {

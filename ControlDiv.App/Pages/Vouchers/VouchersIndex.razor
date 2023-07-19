@@ -23,12 +23,12 @@
                 @foreach (var voucher in Vouchers)
                 {
                     <tr>
-                        <th>@voucher.Date</th>
+                        <th>@voucher.Date.ToLocalTime()</th>
                         <th>@voucher.Code</th>
                         <th>@voucher.Mont</th>
                         <th>@voucher.Account.Name</th>                        
                         <th>@voucher.TypeVoucher</th>
-                        <th>@voucher.Observation</th>
+                        <th>@voucher.Details</th>
                     </tr>
                 }
             </tbody>
@@ -42,7 +42,7 @@
     public List<Voucher> Vouchers { get; set; }
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
-    private async Task ShowModal(int id = 0)
+    private async Task ShowModal()
     {
         IModalReference modalReference;
 

@@ -1,0 +1,88 @@
+﻿@page "/Sale/Add"
+@inject IRepository repository
+@inject SweetAlertService sweet;
+<h3>Nueva Venta</h3>
+
+<EditForm Model="sale" OnValidSubmit="Add">
+    <DataAnnotationsValidator />
+    <div>
+        <div>
+            <label>Codigo</label>
+            <div>
+                <InputText class="form-control" @bind-Value="sale.VoucherCode" />
+                <ValidationMessage For="(()=> sale.VoucherCode)"/>
+            </div>
+        </div>
+        <div>
+            <label>Monto Recibido</label>
+            <div>
+                <InputNumber class="form-control" @bind-Value="sale.MontVoucher" />
+                <ValidationMessage For="(()=> sale.MontVoucher)" />
+            </div>
+        </div>
+        <div>
+            <label>Banco</label>
+            <div>
+                <InputSelect class="form-select" @bind-Value="sale.AccountId">
+                    <option>--Seleccionar--</option>
+                    @if (accounts != null)
+                    {
+                        @foreach (var act in accounts)
+                        {
+                            <option value="@act.Id">@act.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="(()=> sale.AccountId)" />
+            </div>
+        </div>
+        <div>
+            <label>Monto Venta</label>
+            <div>
+                <InputNumber class="form-control" @bind-Value="sale.MontSale" />
+                <ValidationMessage For="(()=> sale.MontSale)" />
+            </div>
+        </div>
+        <div>
+            <label>Observación</label>
+            <div>
+                <InputText class="form-control" @bind-Value="sale.details" />
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-success" type="submit">Agregar</button>
+        </div>
+
+    </div>
+</EditForm>
+@code {
+    private SaleDTO sale = new();
+    private List<Account> accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await repository.Get<List<Account>>(Apis.Account);
+        accounts = response.Response;
+    }
+
+    private async void Add()
+    {
+        var httpResponse = await repository.Post(Apis.Sale,sale);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweet.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            var toast = sweet.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.TopEnd,
+                    ShowConfirmButton = true,
+                    Timer = 5000
+                });
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Agregado Exitoso.");
+        }
+    }
+}

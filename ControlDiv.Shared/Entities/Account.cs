@@ -16,7 +16,9 @@ namespace ControlDiv.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public string? Name { get; set; }
         [Display(Name = "Monto")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
         [Column(TypeName = "decimal(18,2)")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal Mont { get; set; } 
 
         public ICollection<Voucher>? Vouchers { get; set;}

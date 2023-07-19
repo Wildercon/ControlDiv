@@ -18,6 +18,7 @@ namespace ControlDiv.Shared.Entities
         public string Name { get; set; } = null!;
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
-        
+        public decimal Mont { get; set; }
+        public decimal Comission { get; set; }
     }
 }

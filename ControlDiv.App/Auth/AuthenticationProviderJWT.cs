@@ -12,16 +12,17 @@ using System.Threading.Tasks;
 
 namespace ControlDiv.App.Auth
 {
-    internal class AuthenticationProviderJWT : AuthenticationStateProvider, ILoginService
+    public class AuthenticationProviderJWT : AuthenticationStateProvider, ILoginService
     {
         private readonly IJSRuntime _jSRuntime;
+        private readonly HttpClient _httpClient;
         private readonly String _tokenKey;
         private readonly AuthenticationState _anonimous;
 
-        public AuthenticationProviderJWT(IJSRuntime jSRuntime)
+        public AuthenticationProviderJWT(IJSRuntime jSRuntime, HttpClient httpClient)
         {
             _jSRuntime = jSRuntime;
-            
+            _httpClient = httpClient;
             _tokenKey = "TOKEN_KEY";
             _anonimous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
@@ -39,8 +40,7 @@ namespace ControlDiv.App.Auth
 
         private AuthenticationState BuildAuthenticationState(string token)
         {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             var claims = ParseClaimsFromJWT(token);
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
         }
@@ -62,9 +62,8 @@ namespace ControlDiv.App.Auth
 
         public async Task LogoutAsync()
         {
-            using var httpClient = new HttpClient();
             await _jSRuntime.RemoveLocalStorage(_tokenKey);
-            httpClient.DefaultRequestHeaders.Authorization = null;
+            _httpClient.DefaultRequestHeaders.Authorization = null;
             NotifyAuthenticationStateChanged(Task.FromResult(_anonimous));
         }
 

@@ -1,42 +1,35 @@
-﻿using ControlDiv.Shared.Enum;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
+﻿using ControlDiv.Shared.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
-namespace ControlDiv.Shared.Entities
+namespace ControlDiv.Shared.DTOs
 {
-    public class Voucher
+    public class SaleDTO
     {
-        public int Id { get; set; }
-        
         [Display(Name = "Codigo")]
         [MaxLength(12, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [MinLength(11, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
-        public string? Code { get; set; }
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string? VoucherCode { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int AccountId { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Monto")]
+        [Display(Name = "Monto Operación")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public decimal Mont { get; set; } 
-        
-        public string? TypeVoucher { get; set; }
-        [Display(Name = "Cuenta")]       
-        public Account? Account { get; set; }
-        public OperationType OperationType { get; set; }     
-        public string? Details { get; set; }
-        [Display(Name ="Fecha")]
-        public DateTime Date { get; set; }
+        public decimal MontVoucher { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Total")]
+        [Display(Name = "Monto Venta")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public decimal Total { get; set; }
+        public decimal MontSale { get; set; }
+        public string? details { get; set; }
     }
 }

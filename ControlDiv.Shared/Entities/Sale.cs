@@ -13,14 +13,22 @@ namespace ControlDiv.Shared.Entities
         public int Id { get; set; }
         [Display(Name = "Vendedor")]
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        public Seller? Seller { get; set; }
+        public User? User { get; set; }
+        public string? UserId { get; set; }
         public string? Details { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Monto")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal Mont { get; set; }
         [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "Total")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
         public decimal Total { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        
+        public decimal Comission { get; set; }
         public DateTime Date { get; set; } 
 
     }

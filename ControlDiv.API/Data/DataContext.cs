@@ -11,7 +11,7 @@ namespace ControlDiv.API.Data
             
         }
 
-        public DbSet<Seller> Sellers { get; set; }
+        
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Sale> Sales { get; set; }
@@ -20,7 +20,7 @@ namespace ControlDiv.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Seller>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<Voucher>().HasIndex(x => x.Code).IsUnique();
         }
     }
 }

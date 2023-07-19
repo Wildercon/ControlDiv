@@ -19,7 +19,7 @@ namespace ControlDiv.App
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
-
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7230/") });
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddScoped<IRepository, Repository>();
             builder.Services.AddScoped<IAccounRepository, AccountRepository>();

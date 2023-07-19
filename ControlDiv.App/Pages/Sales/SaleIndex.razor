@@ -1,0 +1,46 @@
+﻿@page "/SaleIndex"
+@inject IRepository repository;
+@inject SweetAlertService sweetAlertService;
+<h3>Ventas</h3>
+
+<a class="btn btn-primary" href="/Sale/Add">Agregar</a>
+
+<GenericList MyList="sales">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Total</th>
+                    <th>Comisión</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var sl in sales)
+                {
+                    <tr>
+                        <td>$"{@sl.Date.ToLocalTime():dd/MM/yyyy hh:mm tt}"</td>
+                        <td>@sl.Mont</td>
+                        <td>@sl.Total</td>
+                        <td>@sl.Comission</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+@code {
+    private List<Sale> sales;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpReponse = await repository.Get<List<Sale>>(Apis.Sale);
+        if (httpReponse.Error)
+        {
+            var message = await httpReponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        sales = httpReponse.Response;
+    }
+}

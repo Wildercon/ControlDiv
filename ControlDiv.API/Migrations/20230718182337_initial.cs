@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ControlDiv.API.Migrations
 {
     /// <inheritdoc />
-    public partial class nue : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,21 +67,6 @@ namespace ControlDiv.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sellers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Mont = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Commission = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sellers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Vouchers",
                 columns: table => new
                 {
@@ -91,7 +76,8 @@ namespace ControlDiv.API.Migrations
                     Mont = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TypeVoucher = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AccountId = table.Column<int>(type: "int", nullable: true),
-                    Observation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OperationType = table.Column<int>(type: "int", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -217,19 +203,20 @@ namespace ControlDiv.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SellerId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mont = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Comission = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sales", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sales_Sellers_SellerId",
-                        column: x => x.SellerId,
-                        principalTable: "Sellers",
+                        name: "FK_Sales_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -274,20 +261,20 @@ namespace ControlDiv.API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sales_SellerId",
+                name: "IX_Sales_UserId",
                 table: "Sales",
-                column: "SellerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sellers_Name",
-                table: "Sellers",
-                column: "Name",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_AccountId",
                 table: "Vouchers",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_Code",
+                table: "Vouchers",
+                column: "Code",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -319,9 +306,6 @@ namespace ControlDiv.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Sellers");
 
             migrationBuilder.DropTable(
                 name: "Accounts");
