@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using ControlDiv.Shared.Enum;
 using System.Xml.Linq;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlDiv.Shared.Entities
 {
@@ -18,7 +20,9 @@ namespace ControlDiv.Shared.Entities
         public string Name { get; set; } = null!;
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Mont { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Comission { get; set; }
     }
 }

@@ -1,0 +1,34 @@
+﻿@page "/"
+@inject IRepository repository;
+@inject SweetAlertService sweetAlertService;
+<h3>Index</h3>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        
+    </Authorized>
+</AuthorizeView>
+<div>
+    <label>Compra: @priceDollar.Compra</label>
+    <label>Venta: @priceDollar.Venta</label>
+    <div>
+        <a class="btn btn-secondary">Editar</a>
+    </div>
+</div>
+
+@code {
+    private PriceDollar priceDollar = new()
+    {
+        Compra = 0,
+        Venta = 0
+    };
+    protected override async Task OnInitializedAsync()
+    {
+        var httpResponse = await repository.Get<PriceDollar>(Apis.PriceDollar);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        priceDollar = httpResponse.Response;
+    }
+}

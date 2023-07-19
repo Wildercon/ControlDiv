@@ -15,7 +15,7 @@ namespace ControlDiv.API.Data
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Sale> Sales { get; set; }
-        
+        public DbSet<PriceDollar> Prices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

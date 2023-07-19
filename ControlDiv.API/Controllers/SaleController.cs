@@ -41,14 +41,13 @@ namespace ControlDiv.API.Controllers
             if (user != null)
             {
                 var result = await _saleRepository.Add(saleDTO, user);
-                if (result != string.Empty) 
+                if (result == string.Empty) 
                     return Ok();
                 else 
                     return BadRequest(result);
             }
             else 
-                return BadRequest("Debe estar logueado");
-               
+                return BadRequest("Debe estar logueado");          
         }
     }
 }

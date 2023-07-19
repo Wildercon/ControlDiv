@@ -20,7 +20,7 @@
                 @foreach(var sl in sales)
                 {
                     <tr>
-                        <td>$"{@sl.Date.ToLocalTime():dd/MM/yyyy hh:mm tt}"</td>
+                        <td>@sl.Date.ToLocalTime().ToShortDateString()</td>
                         <td>@sl.Mont</td>
                         <td>@sl.Total</td>
                         <td>@sl.Comission</td>

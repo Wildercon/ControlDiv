@@ -13,5 +13,6 @@ namespace ControlDiv.App.Data
         public const string Operation = $"api/Operation";
         public const string User = $"api/User";
         public const string Sale = $"api/Sale";
+        public const string PriceDollar = $"api/PriceDollar";
     }
 }
