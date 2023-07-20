@@ -10,12 +10,12 @@ namespace ControlDiv.API.Repository
     public class SaleRepository : ISaleRepository
     {
         private readonly DataContext _context;
-        
+        private readonly ITemporalSaleRepository _temporalSaleRepository;
 
-        public SaleRepository(DataContext context, IVoucherRepository voucherRepository)
+        public SaleRepository(DataContext context, IVoucherRepository voucherRepository, ITemporalSaleRepository temporalSaleRepository)
         {
             _context = context;
-            
+            _temporalSaleRepository = temporalSaleRepository;
         }
 
         public async Task<string> Add(SaleDTO saleDTO,User user)
@@ -55,6 +55,8 @@ namespace ControlDiv.API.Repository
                             }
                             else
                             {
+                                await _temporalSaleRepository.Add(saleDTO, user);
+                                trans.Commit();
                                 return "Hay disparidad en monto de venta, El administrador debe Autorizar la Operación";
                             }
 
@@ -67,7 +69,9 @@ namespace ControlDiv.API.Repository
                     }
                     else
                     {
-                        return "Aun no Verifican este pago intente mas tarde";
+                        await _temporalSaleRepository.Add(saleDTO, user);
+                        trans.Commit();
+                        return "Aun no Verifican este pago,Espere que el administrador autorize la operación";
                     }
                 }
                 catch (Exception ex)

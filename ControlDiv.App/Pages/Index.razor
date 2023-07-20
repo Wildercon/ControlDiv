@@ -2,11 +2,7 @@
 @inject IRepository repository;
 @inject SweetAlertService sweetAlertService;
 <h3>Index</h3>
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        
-    </Authorized>
-</AuthorizeView>
+
 <div>
     <label>Compra: @priceDollar.Compra</label>
     <label>Venta: @priceDollar.Venta</label>
@@ -14,13 +10,40 @@
         <a class="btn btn-secondary">Editar</a>
     </div>
 </div>
+<GenericList MyList="temporalSales">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Referencia</th>
+                    <th>Monto Enviado</th>
+                    <th>Banco</th>
+                    <th>Vendedor</th>
+                    <th>Monto Venta</th>
+                    <th>Detalles</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var tl in temporalSales)
+                {
+                    <tr>
+                        <td>@tl.VoucherCode</td>
+                        <td>@tl.Montreceived</td>
+                        <td>@tl.Account.Name</td>
+                        <td>@tl.User.Name</td>
+                        <td>@tl.MontSale</td>
+                        <td>@tl.Details</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </Body>
+</GenericList>
 
 @code {
-    private PriceDollar priceDollar = new()
-    {
-        Compra = 0,
-        Venta = 0
-    };
+    private PriceDollar priceDollar = new(){Compra = 0,Venta = 0};
+    private List<TemporalSale> temporalSales;
     protected override async Task OnInitializedAsync()
     {
         var httpResponse = await repository.Get<PriceDollar>(Apis.PriceDollar);
@@ -30,5 +53,12 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
         }
         priceDollar = httpResponse.Response;
+        var httpResponse2 = await repository.Get<List<TemporalSale>>(Apis.TemporalSale);
+        if (httpResponse2.Error)
+        {
+            var message = await httpResponse2.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        temporalSales =  httpResponse2.Response;
     }
 }

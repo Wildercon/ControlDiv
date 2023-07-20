@@ -11,16 +11,17 @@ namespace ControlDiv.API.Data
             
         }
 
-        
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Sale> Sales { get; set; }
         public DbSet<PriceDollar> Prices { get; set; }
+        public DbSet<TemporalSale> Temporals { get; set; }  
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Voucher>().HasIndex(x => x.Code).IsUnique();
+            modelBuilder.Entity<TemporalSale>().HasIndex(x => x.VoucherCode).IsUnique();
         }
     }
 }
