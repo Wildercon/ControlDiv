@@ -40,7 +40,7 @@ namespace ControlDiv.API.Repository
                                     Total = saleDTO.MontSale + user.Mont,
                                     Comission = saleDTO.MontSale + user.Comission,
                                     User = user,
-                                    Details = $"{saleDTO.details}codigo{voucher.Code}"
+                                    Details = $"{saleDTO.details} codigo{voucher.Code}"
                                 };
                                 user.Mont = user.Mont + sale.Mont;
                                 user.Comission = user.Comission + sale.Mont;

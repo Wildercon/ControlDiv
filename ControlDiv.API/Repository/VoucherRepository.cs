@@ -18,32 +18,27 @@ namespace ControlDiv.API.Repository
 
         public async Task<string> AddVoucherAndUpdateAccount(Voucher voucher)
         {
-            using (var trans = _dataContext.Database.BeginTransaction())
+
+            try
             {
-                try
-                {
-                    voucher.Date = DateTime.UtcNow;
-                    if (voucher.TypeVoucher == "Credito")
-                        voucher.Account!.Mont = voucher.Account.Mont + voucher.Mont;
-                    else if (voucher.TypeVoucher == "Debito")
-                        voucher.Account!.Mont = voucher.Account.Mont - voucher.Mont;                  
-                    voucher.OperationType = OperationType.sinOperar;
-                    voucher.Total = voucher.Account!.Mont;
-                    voucher.Details = voucher.OperationType.GetDisplayName()+voucher.Details;
-
-                    _dataContext.Add(voucher);
-
-                    _dataContext.Update(voucher.Account);
-                    await _dataContext.SaveChangesAsync();
-                    trans.Commit();
+                voucher.Date = DateTime.UtcNow;
+                if (voucher.TypeVoucher == "Credito")
+                    voucher.Account!.Mont = voucher.Account.Mont + voucher.Mont;
+                else if (voucher.TypeVoucher == "Debito")
+                    voucher.Account!.Mont = voucher.Account.Mont - voucher.Mont;
+                voucher.Total = voucher.Account!.Mont;
+                voucher.Details = voucher.OperationType.GetDisplayName() + voucher.Details;
+                _dataContext.Add(voucher);
+                _dataContext.Update(voucher.Account);
+                var result = await _dataContext.SaveChangesAsync();
+                if (result > 0)
                     return "";
-                }
-                catch (Exception ex)
-                {
-                    trans.Rollback();
-                    return ex.ToString();
-                }
-
+                else
+                    return "Error Inesperado";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
             }
         }
 

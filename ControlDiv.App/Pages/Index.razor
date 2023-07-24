@@ -1,15 +1,28 @@
-﻿@page "/"
+﻿@page "/Home"
+@using System.Net;
 @inject IRepository repository;
 @inject SweetAlertService sweetAlertService;
-<h3>Index</h3>
+<AuthorizeView>
+    <Authorized>
+        <p>Estas autenticado, @context.User.Identity?.Name</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>No estas autorizado</p>
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <div>
+            <label>Compra: @priceDollar.Compra</label>
+            <label>Venta: @priceDollar.Venta</label>
+            <div>
+                <a class="btn btn-secondary">Editar</a>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
-<div>
-    <label>Compra: @priceDollar.Compra</label>
-    <label>Venta: @priceDollar.Venta</label>
-    <div>
-        <a class="btn btn-secondary">Editar</a>
-    </div>
-</div>
+
 <GenericList MyList="temporalSales">
     <Body>
         <table class="table table-striped">
@@ -21,6 +34,7 @@
                     <th>Vendedor</th>
                     <th>Monto Venta</th>
                     <th>Detalles</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +47,10 @@
                         <td>@tl.User.Name</td>
                         <td>@tl.MontSale</td>
                         <td>@tl.Details</td>
+                        <td>
+                            <button class="btn btn-outline-danger" @onclick=@(() => DeleteAsync(tl.Id))>Eliminar</button>
+                            <button class="btn btn-outline-primary" @onclick=@(() => AddAsync(tl))>Agregar</button>                              
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -45,6 +63,10 @@
     private PriceDollar priceDollar = new(){Compra = 0,Venta = 0};
     private List<TemporalSale> temporalSales;
     protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+    private async Task LoadAsync()
     {
         var httpResponse = await repository.Get<PriceDollar>(Apis.PriceDollar);
         if (httpResponse.Error)
@@ -59,6 +81,71 @@
             var message = await httpResponse2.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
         }
-        temporalSales =  httpResponse2.Response;
+        temporalSales = httpResponse2.Response;
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Realmente deseas eliminar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Delete($"{Apis.TemporalSale}/{id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadAsync();
+    }
+    private async Task AddAsync(TemporalSale temporalSale)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Realmente deseas agregar la venta?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Post(Apis.TemporalSale,temporalSale);
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadAsync();
     }
 }
+
+

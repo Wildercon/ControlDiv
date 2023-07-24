@@ -20,6 +20,16 @@
             <InputNumber class="form-control" @bind-Value="account.Mont" />
         </div>
     </div>
+    <div>
+        <label>Monto</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="account.AccountType">
+                <option>--Selecciona--</option>
+                <option value="USD">USD</option>
+                <option value="VEF">VEF</option>
+            </InputSelect>
+        </div>
+    </div>
     <div class="p-3">
         <button class="btn btn-primary" type="submit">Guardar</button>
     </div>
@@ -31,7 +41,6 @@
     private async Task Create()
     {
         await repository.Post(Apis.Account, account);
-
     }
 
 }

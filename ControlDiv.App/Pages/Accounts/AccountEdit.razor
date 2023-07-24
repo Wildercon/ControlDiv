@@ -1,0 +1,88 @@
+﻿@page "/Account/Edit"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+<h3>AccountEdit</h3>
+
+<EditForm Model="account" OnValidSubmit="Update">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Cuenta</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="account.Id">
+                <option>-Seleccione--</option>
+            
+            @if(accounts is null)
+            {
+                
+            }
+            else
+            {
+                
+                @foreach (var ac in accounts)
+                {
+                    <option value="@ac.Id">@ac.Name</option>
+                }
+            }
+            </InputSelect>
+        </div>
+    </div>
+    <div>
+        <label>Monto</label>
+        <div>
+            <InputNumber class="form-control" @bind-Value="account.Mont" />
+        </div>
+    </div>
+    <div>
+        <label>Tipo Moneda</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="account.AccountType">
+                <option>--Selecciona--</option>
+                <option value="USD">USD</option>
+                <option value="VEF">VEF</option>
+            </InputSelect>
+        </div>
+    </div>
+    <div class="p-3">
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </div>
+
+</EditForm>
+
+@code {
+    private AccountDTO account = new();
+    private List<Account> accounts;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpReponse = await repository.Get<List<Account>>(Apis.Account);
+        if (httpReponse.Error)
+        {
+            var message = await httpReponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        accounts = httpReponse.Response;
+    }
+    private async Task Update()
+    {
+        var httpResponse =  await repository.Put(Apis.Account, account);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.TopEnd,
+                ShowConfirmButton = true,
+                Timer = 5000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Editado Exitoso.");
+        navigationManager.NavigateTo("Account");
+    }
+
+}

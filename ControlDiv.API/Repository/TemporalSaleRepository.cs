@@ -1,6 +1,7 @@
 ﻿using ControlDiv.API.Data;
 using ControlDiv.Shared.DTOs;
 using ControlDiv.Shared.Entities;
+using ControlDiv.Shared.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControlDiv.API.Repository
@@ -8,10 +9,14 @@ namespace ControlDiv.API.Repository
     public class TemporalSaleRepository : ITemporalSaleRepository
     {
         private readonly DataContext _context;
+        private readonly IVoucherRepository _voucherRepository;
 
-        public TemporalSaleRepository(DataContext context)
+        
+
+        public TemporalSaleRepository(DataContext context, IVoucherRepository voucherRepository)
         {
             _context = context;
+            _voucherRepository = voucherRepository;
         }
 
         public async Task<bool> Add(SaleDTO saleDTO,User user)
@@ -31,15 +36,68 @@ namespace ControlDiv.API.Repository
             return (result > 0);
         }
 
-        public async Task<List<TemporalSale>> GetAll()
+        public async Task<string> AuthorizeTemporalSale(TemporalSale temporalSale)
         {
-            var result = await _context.Temporals.Include(x => x.Account).Include(x => x.User).ToListAsync();
-            return result;
-        }
+            using (var trans = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = temporalSale.User;
+                    var voucher = _context.Vouchers.FirstOrDefault(x => x.Code == temporalSale.VoucherCode);
+                    if (voucher == null)
+                    {
+                        var vouch = new Voucher()
+                        {
+                            Code = temporalSale.VoucherCode,
+                            Mont = temporalSale.Montreceived,
+                            Account = temporalSale.Account,
+                            Details = $"{user!.Name} {temporalSale.MontSale}",  
+                            TypeVoucher = "Credito",
+                            OperationType = OperationType.Venta
+                        };
+                        var result = await _voucherRepository.AddVoucherAndUpdateAccount(vouch);
+                        if (result != string.Empty)
+                            return result;
+                    }
+                    else
+                    {
+                        if (voucher.OperationType == OperationType.sinOperar)
+                        {
+                            voucher!.OperationType = OperationType.Venta;
+                            voucher.Details = $"{voucher.OperationType} {user!.Name}  {temporalSale.MontSale}";
+                            _context.Vouchers.Update(voucher);
+                        }
+                        else
+                            return "Esta Pago ya tiene una operación";
+                    }
+                    user.Comission = user.Comission + temporalSale.MontSale;
+                    user.Mont = user.Mont + temporalSale.MontSale;
 
-        public Task<List<TemporalSale>> GetTemporalUser()
-        {
-            throw new NotImplementedException();
+                    var sale = new Sale()
+                    {
+                        User = user,
+                        Mont = temporalSale.MontSale,
+                        Details = $"{temporalSale.Details} codigo {temporalSale.VoucherCode}",
+                        Date = DateTime.UtcNow,
+                        Comission = user!.Comission ,
+                        Total = user.Mont 
+                    };
+                    _context.Users.Update(user);
+                    await _context.Sales.AddAsync(sale); 
+                    await _context.Temporals.Where(x=> x.Id == temporalSale.Id).ExecuteDeleteAsync();
+                    await _context.SaveChangesAsync();
+                    await trans.CommitAsync();
+                    return "";
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    return ex.Message;                    
+                }
+            }
         }
+            
+
+       
     }
 }

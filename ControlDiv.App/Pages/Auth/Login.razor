@@ -1,4 +1,4 @@
-﻿@page "/Login"
+﻿@page "/"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
@@ -53,7 +53,7 @@
         }
 
         await loginService.LoginAsync(responseHttp.Response!.Token);
-        navigationManager.NavigateTo("/");
+        navigationManager.NavigateTo("/Home");
     }
 }
 

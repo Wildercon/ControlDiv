@@ -2,6 +2,7 @@
 using ControlDiv.API.Repository;
 using ControlDiv.Shared.DTOs;
 using ControlDiv.Shared.Entities;
+using ControlDiv.Shared.Enum;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +32,11 @@ namespace ControlDiv.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var list = await _genericRepository.GetAll();
-            return Ok(list);
+            var user = _context.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
+            if (user!.UserType == UserType.Admin)                
+                return Ok(await _genericRepository.GetAll());
+            else
+                return Ok(await _context.Sales.Where(x => x.User == user).ToListAsync());
         }
         [HttpPost]
         public async Task<IActionResult> Add(SaleDTO saleDTO)
