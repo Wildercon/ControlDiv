@@ -25,6 +25,7 @@ namespace ControlDiv.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(PriceDollar priceDollar)
         {
+            priceDollar.Id = 2;
             _dataContext.Prices.Update(priceDollar);
             var result = await _dataContext.SaveChangesAsync();
             if(result > 0)

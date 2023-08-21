@@ -52,7 +52,7 @@ namespace ControlDiv.API.Repository
                             Mont = temporalSale.Montreceived,
                             Account = temporalSale.Account,
                             Details = $"{user!.Name} {temporalSale.MontSale}",  
-                            TypeVoucher = "Credito",
+                            NoteType = NoteType.Credito,
                             OperationType = OperationType.Venta
                         };
                         var result = await _voucherRepository.AddVoucherAndUpdateAccount(vouch);

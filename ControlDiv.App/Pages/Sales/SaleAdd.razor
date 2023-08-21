@@ -67,6 +67,7 @@
 
     private async void Add()
     {
+        sale.IsSale = true;
         var httpResponse = await repository.Post(Apis.Sale,sale);
         if (httpResponse.Error)
         {

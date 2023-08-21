@@ -16,13 +16,14 @@
             <label>Compra: @priceDollar.Compra</label>
             <label>Venta: @priceDollar.Venta</label>
             <div>
-                <a class="btn btn-secondary">Editar</a>
+                <a class="btn btn-secondary" href="PriceDollar/Update">Editar</a>
             </div>
         </div>
     </Authorized>
 </AuthorizeView>
 
 
+<h3 class="text-center">Ventas pendienter por autorización</h3>
 <GenericList MyList="temporalSales">
     <Body>
         <table class="table table-striped">
@@ -31,7 +32,12 @@
                     <th>Referencia</th>
                     <th>Monto Enviado</th>
                     <th>Banco</th>
-                    <th>Vendedor</th>
+                    <AuthorizeView Roles="Admin">
+                        <Authorized>
+                            <th>Vendedor</th>
+                        </Authorized>
+                    </AuthorizeView>
+                    
                     <th>Monto Venta</th>
                     <th>Detalles</th>
                     <th></th>
@@ -44,12 +50,21 @@
                         <td>@tl.VoucherCode</td>
                         <td>@tl.Montreceived</td>
                         <td>@tl.Account.Name</td>
-                        <td>@tl.User.Name</td>
+                        <AuthorizeView Roles="Admin"> 
+                            <Authorized>
+                                <td>@tl.User.Name</td>
+                            </Authorized>
+                        </AuthorizeView>                        
                         <td>@tl.MontSale</td>
                         <td>@tl.Details</td>
                         <td>
                             <button class="btn btn-outline-danger" @onclick=@(() => DeleteAsync(tl.Id))>Eliminar</button>
-                            <button class="btn btn-outline-primary" @onclick=@(() => AddAsync(tl))>Agregar</button>                              
+                            <AuthorizeView Roles="Admin">
+                                <Authorized>
+                                    <button class="btn btn-outline-primary" @onclick=@(() => AddAsync(tl))>Agregar</button>
+                                </Authorized>
+                            </AuthorizeView>
+                                                          
                         </td>
                     </tr>
                 }

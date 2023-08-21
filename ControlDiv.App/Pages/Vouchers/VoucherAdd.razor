@@ -35,11 +35,11 @@
     </div>
     <div>
         <label>Tipo De Nota</label>
-        <InputSelect class="form-select" @bind-Value="voucher.TypeVoucher">
-            <option value="Debito">Debito</option>
-            <option value="Credito">Credito</option>
+        <InputSelect class="form-select" @bind-Value="voucher.NoteType">
+            <option value=0>Debito</option>
+            <option value=1>Credito</option>
         </InputSelect>
-        <ValidationMessage For="(()=> voucher.TypeVoucher)" />
+        <ValidationMessage For="(()=> voucher.NoteType)" />
     </div>
     <div class="m-3">
         <button class="btn btn-primary" type="submit">Agregar</button>

@@ -20,38 +20,58 @@ namespace ControlDiv.API.Controllers
         private readonly IGenericRepository<Sale> _genericRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly DataContext _context;
-        
 
-        public SaleController(IGenericRepository<Sale> genericRepository , ISaleRepository saleRepository, DataContext dataContext)
+
+        public SaleController(IGenericRepository<Sale> genericRepository, ISaleRepository saleRepository, DataContext dataContext)
         {
             _genericRepository = genericRepository;
             _saleRepository = saleRepository;
             _context = dataContext;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{pag}")]
+        public async Task<IActionResult> Get(int pag)
         {
+            pag = pag * 5;
             var user = _context.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
-            if (user!.UserType == UserType.Admin)                
+            if (user!.UserType == UserType.Admin)
                 return Ok(await _genericRepository.GetAll());
             else
-                return Ok(await _context.Sales.Where(x => x.User == user).ToListAsync());
+            {
+                var list = await _context.Sales.Where(x => x.User == user).OrderByDescending(x => x.Id).Skip(pag).Take(5).ToListAsync();
+                return Ok(list);
+            }
+                
         }
         [HttpPost]
         public async Task<IActionResult> Add(SaleDTO saleDTO)
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
-            if (user != null)
+            if (user == null) return BadRequest("Debe estar logueado");
+            string result;
+            if (saleDTO.IsSale)
             {
-                var result = await _saleRepository.Add(saleDTO, user);
-                if (result == string.Empty) 
-                    return Ok();
-                else 
-                    return BadRequest(result);
+                result = await _saleRepository.Add(saleDTO, user);
+                    
+            }else
+            {
+                result = await _saleRepository.ReverseSale(saleDTO);
             }
-            else 
-                return BadRequest("Debe estar logueado");          
+           
+            if (result == string.Empty)
+                return Ok();
+            else
+                return BadRequest(result);
+
+        }
+        [HttpPost("Zelle")]
+        public async Task<IActionResult> AddZelle(SaleDTO saleDTO)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
+            if (user == null) return BadRequest("Debe estar logueado");
+            var result = await _saleRepository.AddZelle(saleDTO,user);
+            if(result == string.Empty) return Ok();
+            return BadRequest(result);
         }
     }
 }

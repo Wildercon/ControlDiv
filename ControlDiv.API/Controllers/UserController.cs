@@ -1,6 +1,8 @@
-﻿using ControlDiv.API.Helpers;
+﻿using ControlDiv.API.Data;
+using ControlDiv.API.Helpers;
 using ControlDiv.Shared.DTOs;
 using ControlDiv.Shared.Entities;
+using ControlDiv.Shared.Enum;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +20,14 @@ namespace ControlDiv.API.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
         private readonly IMailHelper _mailHelper;
+        private readonly DataContext _context;
 
-        public UserController(IUserHelper userHelper, IConfiguration configuration, IMailHelper mailHelper)
+        public UserController(IUserHelper userHelper, IConfiguration configuration, IMailHelper mailHelper, DataContext context)
         {
             _userHelper = userHelper;
             _configuration = configuration;
             _mailHelper = mailHelper;
+            _context = context;
         }
         [HttpPost("CreateUser")]
         public async Task<ActionResult> CreateUser([FromBody] UserDTO model)
@@ -131,6 +135,12 @@ namespace ControlDiv.API.Controllers
         public async Task<ActionResult> Get()
         {
             return Ok(await _userHelper.GetUserAsync(User.Identity!.Name!));
+        }
+        [HttpGet("All")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> GetAll()
+        {
+            return Ok(_context.Users.Where(x => x.UserType == UserType.Seller).ToList());
         }
 
         [HttpPost("changePassword")]

@@ -31,5 +31,7 @@ namespace ControlDiv.Shared.DTOs
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal MontSale { get; set; }
         public string? details { get; set; }
+        public string? IdUser { get; set; }
+        public bool IsSale { get; set; }
     }
 }

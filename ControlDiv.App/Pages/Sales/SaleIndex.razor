@@ -14,6 +14,7 @@
                     <th>Monto</th>
                     <th>Total</th>
                     <th>Comisión</th>
+                    <th>Observación</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,23 +25,38 @@
                         <td>@sl.Mont</td>
                         <td>@sl.Total</td>
                         <td>@sl.Comission</td>
+                        <td>@sl.Details</td>
                     </tr>
                 }
             </tbody>
         </table>
+        <div class="text-center">           
+            <button class="oi oi-arrow-circle-left m-1" onclick=@(()=>ListSales(false))></button>
+            <button class="oi oi-arrow-circle-right" onclick=@(()=>ListSales(true))></button>
+        </div>
     </Body>
 </GenericList>
 @code {
     private List<Sale> sales;
+    int pag = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        var httpReponse = await repository.Get<List<Sale>>(Apis.Sale);
+        await ListSales(true);
+    }
+
+    private async Task ListSales(bool isNext)
+    {
+
+        if (isNext == false) pag--;
+        var httpReponse = await repository.Get<List<Sale>>($"{Apis.Sale}/{pag}");
         if (httpReponse.Error)
         {
             var message = await httpReponse.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
         }
         sales = httpReponse.Response;
+        if (isNext) pag++;
+        
     }
 }

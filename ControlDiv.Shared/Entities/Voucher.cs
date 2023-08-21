@@ -19,14 +19,15 @@ namespace ControlDiv.Shared.Entities
         [Display(Name = "Codigo")]
         [MaxLength(12, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [MinLength(11, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string? Code { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Monto")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public decimal Mont { get; set; } 
-        
-        public string? TypeVoucher { get; set; }
+        public decimal Mont { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public NoteType NoteType { get; set; }
         [Display(Name = "Cuenta")]       
         public Account? Account { get; set; }
         public OperationType OperationType { get; set; }     

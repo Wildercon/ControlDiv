@@ -22,9 +22,9 @@ namespace ControlDiv.API.Repository
             try
             {
                 voucher.Date = DateTime.UtcNow;
-                if (voucher.TypeVoucher == "Credito")
+                if (voucher.NoteType == NoteType.Credito)
                     voucher.Account!.Mont = voucher.Account.Mont + voucher.Mont;
-                else if (voucher.TypeVoucher == "Debito")
+                else if (voucher.NoteType == NoteType.Debito)
                     voucher.Account!.Mont = voucher.Account.Mont - voucher.Mont;
                 voucher.Total = voucher.Account!.Mont;
                 voucher.Details = voucher.OperationType.GetDisplayName() + voucher.Details;

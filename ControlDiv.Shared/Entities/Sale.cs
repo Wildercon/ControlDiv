@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlDiv.Shared.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,8 +28,10 @@ namespace ControlDiv.Shared.Entities
         public decimal Total { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
-        
         public decimal Comission { get; set; }
+        
+        public NoteType NoteType { get; set; }
+       
         public DateTime Date { get; set; } 
 
     }

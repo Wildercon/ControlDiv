@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace ControlDiv.Shared.Enum
 {
-    public enum OperationType
+    public enum NoteType
     {
-        sinOperar,
-        Venta,
-        Compra,
-        Devolucion,
-        Zelle,
-        Efectivo,
-        EntregaZelle,
-        Gasto
+        Debito,
+        Credito
     }
 }

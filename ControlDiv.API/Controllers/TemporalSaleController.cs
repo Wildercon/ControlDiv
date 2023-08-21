@@ -32,7 +32,7 @@ namespace ControlDiv.API.Controllers
             else
                 return Ok(await _context.Temporals.Include(x => x.Account).Include(x => x.User).Where(x => x.User == user).ToListAsync());
         }
-        [Authorize(Roles ="Admin")]
+        
         [HttpPost]
         public async Task<IActionResult> AuthorizeSale(TemporalSale temporalSale)
         {
@@ -42,6 +42,7 @@ namespace ControlDiv.API.Controllers
             else
                 return BadRequest(result);
         }
+        
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(int Id)
         {
