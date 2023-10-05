@@ -33,19 +33,17 @@ namespace ControlDiv.API.Repository
                         {
                             var precioD = _context.Prices.FirstOrDefault();
                             var calc = voucher.Mont / precioD!.Venta;
-                            if (saleDTO.MontSale == calc)
+                            if (saleDTO.MontSale <= calc)
                             {
                                 var sale = new Sale()
                                 {
                                     Mont = saleDTO.MontSale,
                                     Date = DateTime.UtcNow,
                                     Total = saleDTO.MontSale + user.Mont,
-                                    Comission = saleDTO.MontSale + user.Comission,
                                     User = user,
-                                    Details = $"{saleDTO.details} codigo{voucher.Code}"
+                                    Details = $"{saleDTO.Details} codigo{voucher.Code}"
                                 };
                                 user.Mont = user.Mont + sale.Mont;
-                                user.Comission = user.Comission + sale.Mont;
                                 voucher.OperationType = OperationType.Venta;
                                 voucher.Details = voucher.OperationType + user.Name;
                                 await _context.Sales.AddAsync(sale);
@@ -97,12 +95,10 @@ namespace ControlDiv.API.Repository
                         Mont = saleDTO.MontSale,
                         Date = DateTime.UtcNow,
                         Total = user!.Mont - saleDTO.MontSale,
-                        Comission = user.Comission - saleDTO.MontSale,
                         User = user,
-                        Details = $"Devolucion {saleDTO.details} codigo {saleDTO.VoucherCode}"
+                        Details = $"Devolucion {saleDTO.Details} codigo {saleDTO.VoucherCode}"
                     };
-                    user.Mont = sale.Total;
-                    user.Comission = sale.Comission;                   
+                    user.Mont = sale.Total;                   
                     _context.Update(user);
                     _context.Add(sale);
                     var account = _context.Accounts.FirstOrDefault(x => x.Id == saleDTO.AccountId);
@@ -131,32 +127,81 @@ namespace ControlDiv.API.Repository
             }
             
         }
-        public async Task<string> AddZelle(SaleDTO saleDTO,User user)
+        public async Task<string> DeliverOrReceiver(DeliverOrReceiveDTO receiveDTO)
         {
             using (var trans = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var voucher = _context.Vouchers.FirstOrDefault(x => x.Code == saleDTO.VoucherCode);
+                    var user = _context.Users.FirstOrDefault(x => x.Id == receiveDTO.IdUser);
+                    var account = _context.Accounts.FirstOrDefault(x => x.Id == 3);
+                    var sale = new Sale()
+                    {
+                        Mont = receiveDTO.Mont,
+                        Date = DateTime.UtcNow,                      
+                        User = user,
+                        Details = $"Efectivo {receiveDTO.Details}"
+                    };
+                    var vouch = new Voucher()
+                    {
+                        Code = "Efectivo",
+                        Mont = receiveDTO.Mont,
+                        Account = account,
+                        Details = $"{receiveDTO.Mont}",                        
+                        OperationType = OperationType.Efectivo
+                    };
+                    if (receiveDTO.IsDeliver)
+                    {
+                        sale.Total = user!.Mont - receiveDTO.Mont;
+                        vouch.NoteType = NoteType.Debito;
+                    }else
+                    {
+                        sale.Total = user!.Mont + receiveDTO.Mont;
+                        vouch.NoteType = NoteType.Credito;
+                    }
+                    user.Mont = sale.Total;
+                    _context.Update(user);
+                    _context.Add(sale);
+                    var result = await _voucherRepository.AddVoucherAndUpdateAccount(vouch);
+                    if (result != string.Empty)
+                        return result;
+                    _context.SaveChanges();
+                    trans.Commit();
+                    return "";
+
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    return ex.Message;
+                }
+            }
+        }
+        public async Task<string> AddZelle(ZelleDTO zelleDTO,User user)
+        {
+            using (var trans = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var voucher = _context.Vouchers.FirstOrDefault(x => x.Code == zelleDTO.Codigo);
                     if (voucher != null)
                     {
                         if (voucher.OperationType == OperationType.sinOperar)
                         {
                             var precioD = _context.Prices.FirstOrDefault();
                             
-                            if (saleDTO.MontSale == voucher.Mont)
+                            if (zelleDTO.Mont == voucher.Mont)
                             {
+                                var descuento = (zelleDTO.Mont * zelleDTO.Percentage) / 100;
                                 var sale = new Sale()
                                 {
-                                    Mont = saleDTO.MontSale,
+                                    Mont = zelleDTO.Mont - descuento,
                                     Date = DateTime.UtcNow,
-                                    Total = saleDTO.MontSale + user.Mont,
-                                    Comission = user.Comission,
+                                    Total = (zelleDTO.Mont-descuento) + user.Mont,
                                     User = user,
-                                    Details = $"Zelle {saleDTO.details} codigo{voucher.Code}"
+                                    Details = $"Zelle {zelleDTO.Mont} {zelleDTO.Details} codigo{voucher.Code}"
                                 };
-                                user.Mont = user.Mont + sale.Mont;
-                                user.Comission = user.Comission;
+                                user.Mont = user.Mont + sale.Mont;                               
                                 voucher.OperationType = OperationType.Zelle;
                                 voucher.Details = voucher.OperationType + user.Name;
                                 await _context.Sales.AddAsync(sale);
@@ -168,9 +213,8 @@ namespace ControlDiv.API.Repository
                             }
                             else
                             {
-                                await _temporalSaleRepository.Add(saleDTO, user);
-                                trans.Commit();
-                                return "Hay disparidad en monto de venta, El administrador debe Autorizar la Operación";
+                                
+                                return "Hay disparidad en monto de venta.";
                             }
 
                         }
@@ -182,7 +226,7 @@ namespace ControlDiv.API.Repository
                     }
                     else
                     {
-                        await _temporalSaleRepository.Add(saleDTO, user);
+                        //await _temporalSaleRepository.Add(zelleDTO, user);
                         trans.Commit();
                         return "Aun no Verifican este pago,Espere que el administrador autorize la operación";
                     }
@@ -194,5 +238,6 @@ namespace ControlDiv.API.Repository
                 }
             }
         }
+        
     }
 }

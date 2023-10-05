@@ -28,7 +28,7 @@ namespace ControlDiv.API.Repository
                 Montreceived = saleDTO.MontVoucher,
                 MontSale = saleDTO.MontSale,
                 Account = account,
-                Details = saleDTO.details,
+                Details = saleDTO.Details,
                 User = user
             };
             await _context.Temporals.AddAsync(TemSale);
@@ -69,8 +69,7 @@ namespace ControlDiv.API.Repository
                         }
                         else
                             return "Esta Pago ya tiene una operación";
-                    }
-                    user.Comission = user.Comission + temporalSale.MontSale;
+                    }                  
                     user.Mont = user.Mont + temporalSale.MontSale;
 
                     var sale = new Sale()
@@ -78,8 +77,7 @@ namespace ControlDiv.API.Repository
                         User = user,
                         Mont = temporalSale.MontSale,
                         Details = $"{temporalSale.Details} codigo {temporalSale.VoucherCode}",
-                        Date = DateTime.UtcNow,
-                        Comission = user!.Comission ,
+                        Date = DateTime.UtcNow,                       
                         Total = user.Mont 
                     };
                     _context.Users.Update(user);

@@ -1,0 +1,78 @@
+﻿@page "/ZelleAdd"
+@inject IRepository repository
+@inject SweetAlertService sweet;
+@inject NavigationManager nav;
+<h3>Nueva Venta</h3>
+
+<EditForm Model="zelleDTO" OnValidSubmit="Add">
+    <DataAnnotationsValidator />
+    <div>
+        <div>
+            <label>Codigo</label>
+            <div>
+                <InputText class="form-control" @bind-Value="zelleDTO.Codigo" />
+                <ValidationMessage For="(()=> zelleDTO.Codigo)" />
+            </div>
+        </div>
+        <div>
+            <label>Monto </label>
+            <div>
+                <InputNumber class="form-control" @bind-Value="zelleDTO.Mont" />
+                <ValidationMessage For="(()=> zelleDTO.Mont)" />
+            </div>
+        </div>
+        <div>
+            <label>Observación</label>
+            <div>
+                <InputText class="form-control" @bind-Value="zelleDTO.Details" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <div>
+                <label>Porcentaje</label>
+            </div>           
+            <InputRadioGroup @bind-Value="zelleDTO.Percentage" class="form-control">
+                <InputRadio  class="form-check-input" Value="2"/> 2
+                <InputRadio class="form-check-input" Value="3" /> 3
+                <InputRadio class="form-check-input" Value="4" /> 4
+            </InputRadioGroup>
+            <ValidationMessage For="(()=> zelleDTO.Percentage)"/>
+        </div>
+        <div class="mb-3">
+            
+            <button class="btn btn-success" type="submit">Agregar</button>
+        </div>
+
+    </div>
+</EditForm>
+
+@code {
+    private ZelleDTO zelleDTO = new();
+
+    private async Task Add()
+    {
+        if (zelleDTO.Percentage == 2 && zelleDTO.Mont < 1000)
+        {
+            await sweet.FireAsync("Información", "Porcentaje disponible solo para montos mayores a 1.000", SweetAlertIcon.Error);
+            return;
+        }   
+        var httpResponse = await repository.Post($"{Apis.Sale}/Zelle",zelleDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweet.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            var toast = sweet.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.TopEnd,
+                    ShowConfirmButton = true,
+                    Timer = 5000
+                });
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Agregado Exitoso.");
+            nav.NavigateTo("/SaleIndex");
+        }
+    }
+}

@@ -65,13 +65,21 @@ namespace ControlDiv.API.Controllers
 
         }
         [HttpPost("Zelle")]
-        public async Task<IActionResult> AddZelle(SaleDTO saleDTO)
+        public async Task<IActionResult> AddZelle(ZelleDTO zelleDTO)
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
             if (user == null) return BadRequest("Debe estar logueado");
-            var result = await _saleRepository.AddZelle(saleDTO,user);
+            var result = await _saleRepository.AddZelle(zelleDTO,user);
             if(result == string.Empty) return Ok();
             return BadRequest(result);
         }
+        [HttpPost("DelOrRec")]
+        public async Task<IActionResult> DeliverOrReceive(DeliverOrReceiveDTO receiveDTO)
+        {
+            var result = await _saleRepository.DeliverOrReceiver(receiveDTO);
+            if (result == string.Empty) return Ok();
+            return BadRequest(result);
+        }
+
     }
 }

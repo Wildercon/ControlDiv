@@ -132,15 +132,33 @@
     }
     private async Task AddAsync(TemporalSale temporalSale)
     {
-        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
-            {
-                Title = "Confirmación",
-                Text = "¿Realmente deseas agregar la venta?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-                CancelButtonText = "No",
-                ConfirmButtonText = "Si"
-            });
+        var result = new SweetAlertResult();
+        if (temporalSale.VoucherCode == string.Empty)
+        {
+            result = await sweetAlertService.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Confirmación",
+                    Text = "¿Realmente deseas agregar la venta?",
+                    Icon = SweetAlertIcon.Question,
+                    ShowCancelButton = true,
+                    CancelButtonText = "No",
+                    ConfirmButtonText = "Si",
+                    Input = "text"
+                });
+        }
+        else
+        {
+            result = await sweetAlertService.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Confirmación",
+                    Text = "¿Realmente deseas agregar la venta?",
+                    Icon = SweetAlertIcon.Question,
+                    ShowCancelButton = true,
+                    CancelButtonText = "No",
+                    ConfirmButtonText = "Si",
+                });
+        }
+        
 
         var confirm = string.IsNullOrEmpty(result.Value);
         if (confirm)

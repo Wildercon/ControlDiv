@@ -17,8 +17,8 @@ namespace ControlDiv.Shared.Entities
         public int Id { get; set; }
         
         [Display(Name = "Codigo")]
-        [MaxLength(12, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [MinLength(11, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
+        [MaxLength(8, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [MinLength(8, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string? Code { get; set; }
         [Column(TypeName = "decimal(18,2)")]

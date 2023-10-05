@@ -20,8 +20,7 @@ namespace ControlDiv.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Voucher>().HasIndex(x => x.Code).IsUnique();
-            modelBuilder.Entity<TemporalSale>().HasIndex(x => x.VoucherCode).IsUnique();
+            
         }
     }
 }

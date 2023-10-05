@@ -1,6 +1,7 @@
 ﻿@page "/Sale/Add"
 @inject IRepository repository
-@inject SweetAlertService sweet;
+@inject SweetAlertService sweet
+@inject NavigationManager nav
 <h3>Nueva Venta</h3>
 
 <EditForm Model="sale" OnValidSubmit="Add">
@@ -46,7 +47,7 @@
         <div>
             <label>Observación</label>
             <div>
-                <InputText class="form-control" @bind-Value="sale.details" />
+                <InputText class="form-control" @bind-Value="sale.Details" />
             </div>
         </div>
         <div class="b-3">
@@ -62,7 +63,8 @@
     protected override async Task OnInitializedAsync()
     {
         var response = await repository.Get<List<Account>>(Apis.Account);
-        accounts = response.Response;
+
+        accounts = response.Response.Where(x => x.AccountType == "VES").ToList();
     }
 
     private async void Add()
@@ -73,6 +75,7 @@
         {
             var message = await httpResponse.GetErrorMessageAsync();
             await sweet.FireAsync("Error", message, SweetAlertIcon.Error);
+            nav.NavigateTo("/SaleIndex");
         }
         else
         {
@@ -84,6 +87,7 @@
                     Timer = 5000
                 });
             await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Agregado Exitoso.");
+            nav.NavigateTo("/SaleIndex");
         }
     }
 }

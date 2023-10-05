@@ -7,6 +7,7 @@ namespace ControlDiv.API.Repository
     {
         Task<string> Add(SaleDTO saleDTO,User user);
         Task<string> ReverseSale(SaleDTO saleDTO);
-        Task<string> AddZelle(SaleDTO saleDTO, User user);
+        Task<string> AddZelle(ZelleDTO zelleDTO, User user);
+        Task<string> DeliverOrReceiver(DeliverOrReceiveDTO receiveDTO);
     }
 }

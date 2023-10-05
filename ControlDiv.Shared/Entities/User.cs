@@ -22,7 +22,6 @@ namespace ControlDiv.Shared.Entities
         public UserType UserType { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal Mont { get; set; }
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Comission { get; set; }
+        
     }
 }

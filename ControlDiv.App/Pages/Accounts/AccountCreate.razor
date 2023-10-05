@@ -1,7 +1,9 @@
 ﻿@page "/Account/Create"
 @using System.Text.Json;
 @using System.Text;
-@inject IRepository repository;
+@inject IRepository repository
+@inject SweetAlertService sweet
+@inject NavigationManager nav
 
 <h3>Agregar Cuenta</h3>
 
@@ -21,12 +23,12 @@
         </div>
     </div>
     <div>
-        <label>Monto</label>
+        <label>Tipo de Moneda</label>
         <div>
             <InputSelect class="form-control" @bind-Value="account.AccountType">
                 <option>--Selecciona--</option>
                 <option value="USD">USD</option>
-                <option value="VEF">VEF</option>
+                <option value="VES">VES</option>
             </InputSelect>
         </div>
     </div>
@@ -40,7 +42,24 @@
     private Account account = new();
     private async Task Create()
     {
-        await repository.Post(Apis.Account, account);
+        var httpResponse = await repository.Post(Apis.Account, account);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweet.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            var toast = sweet.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.TopEnd,
+                    ShowConfirmButton = true,
+                    Timer = 5000
+                });
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Agregado Exitoso.");
+            nav.NavigateTo("/Account");
+        }
     }
 
 }

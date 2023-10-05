@@ -1,0 +1,50 @@
+﻿
+@page "/Account"
+@inject SweetAlertService sweetAlertService;
+@inject IRepository repository;
+
+<h3>Cuentas</h3>
+
+<a class="btn btn-success" href="/Account/Create">Agregar</a>
+<a class="btn btn-info" href="/Account/Edit">Editar</a>
+
+<GenericList MyList="accounts">
+    <Body>
+        <table class ="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in accounts)
+                {
+                    <tr>
+                        <th>@account.Name</th>
+                        <th>@account.Mont</th>
+                        
+                    </tr>
+                }
+               
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+
+@code{
+    private List<Account> accounts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await repository.Get<List<Account>>(Apis.Account);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        accounts = response.Response;
+    }
+}

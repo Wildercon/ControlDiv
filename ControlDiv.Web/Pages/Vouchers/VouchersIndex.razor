@@ -1,0 +1,72 @@
+﻿@page "/Voucher"
+@inject IRepository repository;
+@inject SweetAlertService sweetAlertService;
+<h3>Vouchers</h3>
+
+<a class="btn btn-success" @onclick=@(() => ShowModal())>Agregar</a>
+
+<GenericList MyList="@Vouchers">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Codigo</th>
+                    <th>Monto</th>
+                    <th>Banco</th>
+                    <th>Operación</th>
+                    <th>Observación</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var voucher in Vouchers)
+                {
+                    <tr>
+                        <th>@voucher.Date.ToLocalTime()</th>
+                        <th>@voucher.Code</th>
+                        <th>@voucher.Mont</th>
+                        <th>@voucher.Account.Name</th>                        
+                        <th>@voucher.NoteType</th>
+                        <th>@voucher.Details</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+
+
+
+@code {
+    public List<Voucher> Vouchers { get; set; }
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+    private async Task ShowModal()
+    {
+        IModalReference modalReference;
+
+       
+        modalReference = Modal.Show<VoucherAdd>();
+        
+        var result = await modalReference.Result;
+        if(result.Confirmed)
+            await OnInitializedAsync();
+
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<List<Voucher>>(Apis.Voucher);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            Vouchers = responseHttp.Response;
+        }
+    }
+}

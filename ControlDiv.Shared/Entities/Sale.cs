@@ -27,11 +27,8 @@ namespace ControlDiv.Shared.Entities
         [DisplayFormat(DataFormatString = "{0:C2}")]
         public decimal Total { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        [DisplayFormat(DataFormatString = "{0:C2}")]
-        public decimal Comission { get; set; }
-        
-        public NoteType NoteType { get; set; }
-       
+        [DisplayFormat(DataFormatString = "{0:C2}")]       
+        public NoteType NoteType { get; set; }       
         public DateTime Date { get; set; } 
 
     }

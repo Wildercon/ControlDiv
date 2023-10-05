@@ -14,8 +14,8 @@ namespace ControlDiv.Shared.DTOs
     public class SaleDTO
     {
         [Display(Name = "Codigo")]
-        [MaxLength(12, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [MinLength(11, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
+        [MaxLength(8, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [MinLength(8, ErrorMessage = "El campo {0} debe tener minimo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string? VoucherCode { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
@@ -30,7 +30,7 @@ namespace ControlDiv.Shared.DTOs
         [DisplayFormat(DataFormatString = "{0:C2}")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal MontSale { get; set; }
-        public string? details { get; set; }
+        public string? Details { get; set; }
         public string? IdUser { get; set; }
         public bool IsSale { get; set; }
     }

@@ -1,0 +1,46 @@
+﻿@page "/PriceDollar/Update"
+@inject IRepository repository
+@inject SweetAlertService sweet
+<h3>PriceDollarUpdate</h3>
+<EditForm Model="priceDollar" OnValidSubmit="Update">
+    <DataAnnotationsValidator/>
+    <div>
+        <div>
+            <label>Monto Venta</label>
+            <InputNumber class="form-control" @bind-Value="priceDollar.Venta"/>
+            <ValidationMessage For="(()=> priceDollar.Venta)"/>
+        </div>
+        <div>
+            <label>Monto Compra</label>
+            <InputNumber class="form-control" @bind-Value="priceDollar.Compra" />
+            <ValidationMessage For="(()=> priceDollar.Compra)" />
+        </div>
+        <div class="p-3">
+            <button class="btn btn-primary" type="submit">Actualizar</button>
+        </div>
+    </div>
+    
+</EditForm>
+
+@code {
+    private PriceDollar priceDollar = new();
+
+    private async Task Update()
+    {
+        var response = await repository.Put(Apis.PriceDollar, priceDollar);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweet.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        var toast = sweet.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.TopEnd,
+                ShowConfirmButton = true,
+                Timer = 5000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Editado Exitoso.");
+    }
+}

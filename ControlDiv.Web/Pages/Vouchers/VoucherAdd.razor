@@ -1,0 +1,98 @@
+﻿@page "/Voucher/Add"
+@inject IRepository repository;
+@inject NavigationManager navigationManager;
+@inject SweetAlertService sweetAlert;
+<h3>Agregar Voucher</h3>
+
+<EditForm Model="voucher" OnValidSubmit="Add">
+    <DataAnnotationsValidator/>
+    <div>
+        <label>Codigo</label>
+        <InputText class="form-control" @bind-Value="voucher.Code" />
+        <ValidationMessage For="(()=> voucher.Code)"/>
+    </div>
+    <div>
+        <label>Monto</label>
+        <InputNumber  class="form-control " @bind-Value="voucher.Mont"/>
+        <ValidationMessage For="(()=> voucher.Mont)" />
+    </div>
+    <div>
+        <label>Banco</label>
+        <div>
+            <InputSelect class="form-select" @bind-Value="accountId">
+                <option >--Seleccionar--</option>
+                @if(accounts != null)
+                {
+                    @foreach (var act in accounts)
+                    {
+                        <option value="@act.Id">@act.Name</option>
+                    }
+                }
+               
+            </InputSelect>
+
+        </div>
+    </div>
+    <div>
+        <label>Tipo De Nota</label>
+        <InputSelect class="form-select" @bind-Value="voucher.NoteType">
+            <option value=0>Debito</option>
+            <option value=1>Credito</option>
+        </InputSelect>
+        <ValidationMessage For="(()=> voucher.NoteType)" />
+    </div>
+    <div class="m-3">
+        <button class="btn btn-primary" type="submit">Agregar</button>
+    </div>
+
+    
+    
+</EditForm>
+
+
+@code {
+    private Voucher voucher = new();
+    private List<Account> accounts;
+    private int accountId;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task Add()
+    {
+        foreach(var item in accounts)
+        {
+            if(item.Id == accountId)
+            {
+                voucher.Account = item;
+            }
+        } 
+
+        var httpresponse = await repository.Post(Apis.Voucher, voucher);
+        if (httpresponse.Error)
+        {
+            var message = await httpresponse.GetErrorMessageAsync();
+            await sweetAlert.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            
+            var toast = sweetAlert.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.TopEnd,
+                    ShowConfirmButton = true,
+                    Timer = 5000
+                });
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Agregado Exitoso.");
+        }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var response =  await repository.Get<List<Account>>(Apis.Account);       
+        accounts = response.Response;
+        
+    }
+    
+}

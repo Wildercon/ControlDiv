@@ -44,7 +44,7 @@ namespace ControlDiv.API.Repository
 
         public async Task<List<Voucher>> GetVouchers()
         {
-            return  await _dataContext.Vouchers.Include(x => x.Account).ToListAsync();
+            return  await _dataContext.Vouchers.Include(x => x.Account).OrderByDescending(x=> x.Id).ToListAsync();
         }
     }
 }

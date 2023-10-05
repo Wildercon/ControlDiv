@@ -72,9 +72,6 @@ namespace ControlDiv.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Comission")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -84,8 +81,8 @@ namespace ControlDiv.API.Migrations
                     b.Property<decimal>("Mont")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("NoteType")
-                        .HasColumnType("int");
+                    b.Property<decimal>("NoteType")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
@@ -125,17 +122,13 @@ namespace ControlDiv.API.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VoucherCode")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("VoucherCode")
-                        .IsUnique()
-                        .HasFilter("[VoucherCode] IS NOT NULL");
 
                     b.ToTable("Temporals");
                 });
@@ -147,9 +140,6 @@ namespace ControlDiv.API.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Comission")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -232,8 +222,8 @@ namespace ControlDiv.API.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -256,9 +246,6 @@ namespace ControlDiv.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
 
                     b.ToTable("Vouchers");
                 });

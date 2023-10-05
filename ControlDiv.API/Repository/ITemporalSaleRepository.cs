@@ -7,6 +7,6 @@ namespace ControlDiv.API.Repository
     public interface ITemporalSaleRepository
     {
         Task<bool> Add(SaleDTO saleDTO, User user);        
-        Task<string> AuthorizeTemporalSale(TemporalSale saleDTO);
+        Task<string> AuthorizeTemporalSale(TemporalSale saleDTO);        
     }
 }
