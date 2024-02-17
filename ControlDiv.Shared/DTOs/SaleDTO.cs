@@ -33,5 +33,6 @@ namespace ControlDiv.Shared.DTOs
         public string? Details { get; set; }
         public string? IdUser { get; set; }
         public bool IsSale { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

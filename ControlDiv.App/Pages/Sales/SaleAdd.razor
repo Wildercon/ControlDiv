@@ -50,12 +50,14 @@
                 <InputText class="form-control" @bind-Value="sale.Details" />
             </div>
         </div>
+       
         <div class="b-3">
             <button class="btn btn-success" type="submit">Agregar</button>
         </div>
 
     </div>
 </EditForm>
+
 @code {
     private SaleDTO sale = new();
     private List<Account> accounts;
@@ -90,4 +92,5 @@
             nav.NavigateTo("/SaleIndex");
         }
     }
+    
 }

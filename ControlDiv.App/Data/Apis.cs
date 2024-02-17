@@ -15,5 +15,6 @@ namespace ControlDiv.App.Data
         public const string Sale = $"api/Sale";
         public const string PriceDollar = $"api/PriceDollar";
         public const string TemporalSale = "api/TemporalSale";
+        public const string Customer = "api/Customer1";
     }
 }

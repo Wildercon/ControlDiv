@@ -1,0 +1,43 @@
+﻿@inject SweetAlertService sweetAlertService;
+@inject IRepository repository;
+<h3>ClientIndex</h3>
+
+
+
+<GenericList MyList="customers">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var c in customers)
+                {
+                    <tr>
+                        <th>@c.Name</th>
+                        <th>@c.Mont</th>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+@code {
+    private List<Customer> customers = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await repository.Get<List<Customer>>(Apis.Customer);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        customers = response.Response;
+    }
+}

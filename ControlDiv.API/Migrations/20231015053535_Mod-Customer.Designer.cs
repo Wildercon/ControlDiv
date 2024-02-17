@@ -4,6 +4,7 @@ using ControlDiv.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ControlDiv.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231015053535_Mod-Customer")]
+    partial class ModCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,12 +63,7 @@ namespace ControlDiv.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Customers");
                 });
@@ -78,7 +76,7 @@ namespace ControlDiv.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -95,7 +93,7 @@ namespace ControlDiv.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ClientId");
 
                     b.ToTable("CustomersDetail");
                 });
@@ -441,22 +439,13 @@ namespace ControlDiv.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ControlDiv.Shared.Entities.Customer", b =>
-                {
-                    b.HasOne("ControlDiv.Shared.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ControlDiv.Shared.Entities.CustomerDetail", b =>
                 {
-                    b.HasOne("ControlDiv.Shared.Entities.Customer", "Customer")
+                    b.HasOne("ControlDiv.Shared.Entities.Customer", "Client")
                         .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("ClientId");
 
-                    b.Navigation("Customer");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("ControlDiv.Shared.Entities.Sale", b =>

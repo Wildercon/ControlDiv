@@ -16,6 +16,8 @@ namespace ControlDiv.API.Data
         public DbSet<Sale> Sales { get; set; }
         public DbSet<PriceDollar> Prices { get; set; }
         public DbSet<TemporalSale> Temporals { get; set; }  
+        public DbSet<Customer> Customers { get; set; }    
+        public DbSet<CustomerDetail> CustomersDetail { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

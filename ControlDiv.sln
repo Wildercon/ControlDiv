@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlDiv.Shared", "Contro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlDiv.App", "ControlDiv.App\ControlDiv.App.csproj", "{F161CDEB-34F9-46C6-BAB2-8F5C5D4DA0E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlDiv.Web", "ControlDiv.Web\ControlDiv.Web.csproj", "{262F7622-84A0-47A3-BD6F-8431934D51B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlDiv.Web", "ControlDiv.Web\ControlDiv.Web.csproj", "{262F7622-84A0-47A3-BD6F-8431934D51B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

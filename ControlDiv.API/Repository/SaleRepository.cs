@@ -42,7 +42,25 @@ namespace ControlDiv.API.Repository
                                     Total = saleDTO.MontSale + user.Mont,
                                     User = user,
                                     Details = $"{saleDTO.Details} codigo{voucher.Code}"
+
                                 };
+                                if(saleDTO.Customer != null)
+                                {
+                                    var customer = saleDTO.Customer;
+                                    var customerDetail = new CustomerDetail()
+                                    {
+                                        Customer = customer,
+                                        Mont = saleDTO.MontSale,
+                                        Date = DateTime.UtcNow,
+                                        Total = customer.Mont + saleDTO.MontSale,
+                                        NoteType = NoteType.Credito
+                                    };
+                                    customer.Mont = customerDetail.Total;
+                                    await _context.AddAsync(customerDetail);
+                                    _context.Update(customer);
+                                    user.MontDeliver = user.MontDeliver + saleDTO.MontSale;
+                                }
+                                
                                 user.Mont = user.Mont + sale.Mont;
                                 voucher.OperationType = OperationType.Venta;
                                 voucher.Details = voucher.OperationType + user.Name;
